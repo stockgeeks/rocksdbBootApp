@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
+import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -11,9 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Slf4j
+@Repository
 public class RocksDBRepositoryImpl implements KeyValueRepository<String, String> {
 
-  String name;
+  private final static String NAME = "first-db";
   File dbDir;
   RocksDB db;
 
@@ -22,13 +24,14 @@ public class RocksDBRepositoryImpl implements KeyValueRepository<String, String>
     RocksDB.loadLibrary();
     final Options options = new Options();
     options.setCreateIfMissing(true);
-    dbDir = new File("/tmp/rocks-db", name);
+    dbDir = new File("/tmp/rocks-db", NAME);
     try {
       Files.createDirectories(dbDir.getParentFile().toPath());
       Files.createDirectories(dbDir.getAbsoluteFile().toPath());
       db = RocksDB.open(options, dbDir.getAbsolutePath());
     } catch(IOException | RocksDBException ex) {
-      log.error("Error initializng RocksDB, check configurations and permissions, exception: {}, message: {}, stackTrace: {}", ex.getCause(), ex.getMessage(), ex.getStackTrace());
+      log.error("Error initializng RocksDB, check configurations and permissions, exception: {}, message: {}, stackTrace: {}",
+        ex.getCause(), ex.getMessage(), ex.getStackTrace());
     }
     log.info("RocksDB initialized and ready to use");
   }
