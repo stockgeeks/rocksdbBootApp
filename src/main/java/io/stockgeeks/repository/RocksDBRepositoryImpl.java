@@ -52,6 +52,7 @@ public class RocksDBRepositoryImpl implements KeyValueRepository<String, String>
     String result = null;
     try {
       byte[] bytes = db.get(key.getBytes());
+      if(bytes == null) return null;
       result = new String(bytes);
     } catch (RocksDBException e) {
       e.printStackTrace();
