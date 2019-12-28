@@ -2,6 +2,7 @@ package io.stockgeeks.api;
 
 import io.stockgeeks.repository.KeyValueRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,22 +23,22 @@ public class RocksApi {
     this.rocksDB = rocksDB;
   }
 
-  @PostMapping("/{key}")
+  @PostMapping(value = "/{key}", consumes = MediaType.TEXT_PLAIN_VALUE)
   public ResponseEntity<String> save(@PathVariable("key") String key, @RequestBody String value) {
     log.info("RocksApi.save");
     rocksDB.save(key, value);
     return ResponseEntity.ok(value);
   }
 
-  @GetMapping("/{key}")
+  @GetMapping(value = "/{key}", produces = MediaType.TEXT_PLAIN_VALUE)
   public ResponseEntity<String> find(@PathVariable("key") String key) {
     log.info("RocksApi.find");
-    String result = rocksDB.find(key);
+    var result = rocksDB.find(key);
     if(result == null) return ResponseEntity.noContent().build();
     return ResponseEntity.ok(result);
   }
 
-  @DeleteMapping("/{key}")
+  @DeleteMapping(value = "/{key}")
   public ResponseEntity<String> delete(@PathVariable("key") String key) {
     log.info("RocksApi.delete");
     rocksDB.delete(key);
